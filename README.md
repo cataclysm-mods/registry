@@ -8,8 +8,6 @@ A proposed game mod registry specification for the game Cataclysm: Dark Days Ahe
 
 To view the complete specification, see [SPECIFICATION.md](SPECIFICATION.md).
 
-To understand the motivations behind the specification, see [RATIONALE.md](RATIONALE.md).
-
 # Contributing
 
 To provide feedback or propose changes to the specification or it's goals and scope, please feel free to open an issue or pull request against this repository.

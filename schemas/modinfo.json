@@ -1,0 +1,219 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "JSON Schema for Cataclysm: Dark Days Ahead mod distribution metadata",
+    "definitions": {
+        "non_empty_string": {
+            "description": "A non-empty string.",
+            "type": "string",
+            "minLength": 1
+        },
+        "one_or_more_strings" : {
+            "description" : "One or more non-empty strings.",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/non_empty_string"
+                },
+                {
+                    "type": "array",
+                    "uniqueItems" : true,
+                    "items": {
+                        "$ref": "#/definitions/non_empty_string"
+                    }
+                }
+            ]
+        },
+        "spec_version": {
+            "title": "The version of the C:DDA mod specification being used.",
+            "description": "A short, one line description of the mod and what it does.",
+            "type": "string",
+            "enum": ["0.1"]
+        },
+        "ident": {
+            "title": "Unique identifier for a mod.",
+            "description": "Identifiers may only consist of lowercase ASCII-letters, ASCII-digits and `-`.",
+            "type": "string",
+            "pattern": "^[a-z0-9\\-]+$"
+        },
+        "name": {
+            "title": "Human readable name for a mod.",
+            "description": "This is the human readable name of the mod, and may contain any printable characters. E.g. `Aëromancy` or `Jury-Rigged Robots`.",
+            "$ref": "#/definitions/non_empty_string"
+        },
+        "description": {
+            "title": "Mod description.",
+            "description": "A short, one line description of the mod and what it does.",
+            "$ref": "#/definitions/non_empty_string"
+        },
+        "download": {
+            "title": "Mod download URL.",
+            "description": "A fully formed URL, indicating where a machine may download an archive of the described version of the mod distribution. A `modinfo.json` file *must* include *one of* either `download` or `source`.",
+            "$ref": "#/definitions/non_empty_string",
+            "format": "uri"
+        },
+        "source": {
+            "title": "A JSON object describing how to retreive a distribution from a Git source control repository.",
+            "description": "A `modinfo.json` file *must* include *one of* either `download` or `source`.",
+            "properties": {
+                "url": {
+                    "title": "Git repository URL.",
+                    "description": "A `https` URL to a Git repository containing the distribution.",
+                    "$ref": "#/definitions/non_empty_string",
+                    "format": "uri"
+                },
+                "branch": {
+                    "title": "Git branch name.",
+                    "description": "The name of the Git branch in the repository containing the desired version of the distribution.",
+                    "$ref": "#/definitions/non_empty_string"
+                },
+                "tag": {
+                    "title": "Git tag name.",
+                    "description": "The name of the Git tag in the repository containing the desired version of the distribution.",
+                    "$ref": "#/definitions/non_empty_string"
+                },
+                "ref": {
+                    "title": "Git reference.",
+                    "description": "The a valid Git reference in the repository containing the desired version of the distribution. This is typically a Git SHA, but may be anything valid according to [gitrevisions](https://mirrors.edge.kernel.org/pub/software/scm/git/docs/gitrevisions.html#_specifying_revisions)",
+                    "$ref": "#/definitions/non_empty_string"
+                }
+            },
+            "oneOf": [
+                {
+                    "required": ["url", "branch"]
+                },
+                {
+                    "required": ["url", "tag"]
+                },
+                {
+                    "required": ["url", "ref"]
+                }
+            ]
+        },
+        "license": {
+            "definitions": {
+                "licenseIdentiferDebian": {
+                    "title": "Debian license specification identifiers.",
+                    "description": "https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/#license-specification",
+                    "type": "string",
+                    "enum" : [
+                        "public-domain",
+                        "afl-3.0",
+                        "agpl-3.0",
+                        "apache", "apache-1.0", "apache-2.0",
+                        "apsl-2.0",
+                        "artistic", "artistic-1.0", "artistic-2.0",
+                        "bsd-2-clause", "bsd-3-clause", "bsd-4-clause",
+                        "isc",
+                        "cc-by", "cc-by-1.0", "cc-by-2.0", "cc-by-2.5", "cc-by-3.0", "cc-by-4.0",
+                        "cc-by-sa", "cc-by-sa-1.0", "cc-by-sa-2.0", "cc-by-sa-2.5", "cc-by-sa-3.0", "cc-by-sa-4.0",
+                        "cc-by-nc", "cc-by-nc-1.0", "cc-by-nc-2.0", "cc-by-nc-2.5", "cc-by-nc-3.0", "cc-by-nc-4.0",
+                        "cc-by-nc-sa", "cc-by-nc-sa-1.0", "cc-by-nc-sa-2.0", "cc-by-nc-sa-2.5", "cc-by-nc-sa-3.0", "cc-by-nc-sa-4.0",
+                        "cc-by-nc-nd", "cc-by-nc-nd-1.0", "cc-by-nc-nd-2.0", "cc-by-nc-nd-2.5", "cc-by-nc-nd-3.0", "cc-by-nc-nd-4.0",
+                        "cc-by-nd", "cc-by-nd-1.0", "cc-by-nd-2.0", "cc-by-nd-2.5", "cc-by-nd-3.0", "cc-by-nd-4.0",
+                        "cc0",
+                        "cddl", "cpl",
+                        "efl-1.0", "efl-2.0",
+                        "expat", "mit",
+                        "gpl-1.0", "gpl-2.0", "gpl-3.0",
+                        "lgpl-2.0", "lgpl-2.1", "lgpl-3.0",
+                        "gfdl-1.0", "gfdl-1.1", "gfdl-1.2", "gfdl-1.3",
+                        "gfdl-niv-1.0", "gfdl-niv-1.1", "gfdl-niv-1.2", "gfdl-niv-1.3",
+                        "lppl-1.0", "lppl-1.1", "lppl-1.2", "lppl-1.3c",
+                        "mpl-1.0", "mpl-1.1",
+                        "ms-pl", "ms-rl",
+                        "perl",
+                        "python-2.0",
+                        "qpl-1.0",
+                        "unlicense",
+                        "w3c",
+                        "wtfpl",
+                        "zlib",
+                        "zope"
+                    ]
+                },
+                "licenseIdentiferFuzzy": {
+                    "title": "Fuzzy license identifiers.",
+                    "description": "Categorical license identifiers for describing lisences that aren't covered bythe Debian license specification.",
+                    "type": "string",
+                    "enum": [
+                        "open-source",
+                        "restricted",
+                        "unrestricted",
+                        "unknown"
+                    ]
+                },
+                "licenseIdentifier": {
+                    "title": "A valid liscense identifier.",
+                    "anyOf": [
+                        { "$ref": "#/definitions/license/definitions/licenseIdentiferDebian" },
+                        { "$ref": "#/definitions/license/definitions/licenseIdentiferFuzzy" }
+                    ]
+                }
+            },
+            "title": "The license or list of licenses under which the mod is released.",
+            "description": "A single license, or list of licenses may be provided. If different assets in the mod have different licenses, the *most restrictive* license should be specified, which may be `restricted`.",
+            "oneOf":[
+                { "$ref": "#/definitions/license/definitions/licenseIdentifier" },
+                {
+                    "type": "array",
+                    "items": {
+                        "uniqueItems": true,
+                        "$ref": "#/definitions/license/definitions/licenseIdentifier"
+                    }
+                }
+            ]
+        },
+        "mod_version": {
+            "title": "Mod version metadata.",
+            "description": "The mod_version object descibes version informaion about your mod.",
+            "definitions": {
+                "epoch": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "major": {
+                    "type": "integer"
+                },
+                "minor": {
+                    "type": "integer"
+                },
+                "patch": {
+                    "type": "integer"
+                },
+                "suffix": {
+                    "$ref": "#/definitions/non_empty_string"
+                }
+            }
+        }
+    },
+    "properties": {
+        "spec_version": {
+            "$ref": "#/definitions/spec_version"
+        },
+        "ident": {
+            "$ref": "#/definitions/ident"
+        },
+        "name": {
+            "$ref": "#/definitions/name"
+        },
+        "description": {
+            "$ref": "#/definitions/description"
+        },
+        "source": {
+            "$ref": "#/definitions/source"
+        },
+        "license": {
+            "$ref": "#/definitions/license"
+        }
+    },
+    "required": [
+        "spec_version",
+        "ident",
+        "name",
+        "description",
+        "license"
+    ],
+    "oneOf": [
+        { "required": ["source"] },
+        { "required": ["download"] }
+    ]
+}
